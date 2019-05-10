@@ -23,7 +23,7 @@ def download_file(site):
         cs = connect(server,address)
 
         #generating request and sending to know length of data
-        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Range: Bytes\r\n\r\n'
+        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
         print(request)
         request_header = bytes(request,'utf-8') 
         cs.send(request_header)
@@ -41,7 +41,12 @@ def download_file(site):
         contentlength = int(s[b'Content-Length'])
 
         #requesting again to download file
-        request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
+        if b'bytes' in s[b'Accept-Ranges']  :
+                request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange: bytes=0-1023\r\n\r\n'
+        else:
+                print('Simulataneous connection not allowed using single connection')
+                request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
+                
         request_header = bytes(request,'utf-8')  
         cs.send(request_header)
 
@@ -54,6 +59,7 @@ def download_file(site):
             if new_msg:
                 head = msg.split(b'\r\n\r\n')
                 header=(len(head[0]))+4
+                print(head[0])
                 print(header)
                 msg = head[1]
                 new_msg = False
@@ -80,6 +86,8 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
+site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
+site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 download_file(site)
