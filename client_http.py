@@ -23,7 +23,7 @@ def download_file(site):
         cs = connect(server,address)
 
         #generating request and sending to know length of data
-        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
+        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\n\r\n'
         request_header = bytes(request,'utf-8') 
         cs.send(request_header)
 
@@ -52,27 +52,28 @@ def download_file(site):
                 head = msg.split(b'\r\n\r\n')
                 header=(len(head[0]))+4
                 print(header)
-
+                msg = head[1]
                 new_msg = False
 
             full_msg += msg 
 
-            if len(full_msg)-header== contentlength:
+            if len(full_msg)== contentlength:
                 print(full_msg[header:])
                 print('Done')
-                write_file(full_msg,2,header)
+                write_file(full_msg,2)
                 new_msg = True
                 full_msg = ""
                 c= False
                 cs.close()
                 
-def write_file(msg,x,header):
-        f = open('Socket'+str(x)+'.jpg', 'wb')
-        f.write(msg[header:])
+def write_file(msg,x):
+        f = open('Socket'+str(x)+'.pdf', 'wb')
+        f.write(msg)
         f.close()
                 
                 
 #Main Function
 site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
+#site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 #server,address = get_server_address(site)
 download_file(site)
