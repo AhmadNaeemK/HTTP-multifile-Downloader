@@ -34,7 +34,7 @@ def download_file(site):
         for i in range(1,len(header)-2):
             y = header[i].split(b':')
             s[y[0]] = y[1]
-            print(y)
+            #print(y)
         contentlength = int(s[b'Content-Length'])
 
         #requesting again to download file
@@ -46,8 +46,20 @@ def download_file(site):
         full_msg = b''
         new_msg= True
         c=True
+        msg_1=True
         while c:
             msg = cs.recv(4096)
+
+            if msg_1:
+                msg2 = msg.split(b'\r\n\r\n')[0]
+                msg2 = msg2.split(b'\r\n')
+                print(msg2)
+                s1 = {}
+                for i in range(0,len(msg2)):
+                    y1 = msg2[i]
+                    print(y1)
+                msg_1 = False
+                    
             if new_msg:
                 head = msg.split(b'\r\n\r\n')
                 header=(len(head[0]))+4
@@ -58,7 +70,7 @@ def download_file(site):
             full_msg += msg 
 
             if len(full_msg)== contentlength:
-                print(full_msg[header:])
+                #sprint(full_msg[header:])
                 print('Done')
                 write_file(full_msg,2)
                 new_msg = True
