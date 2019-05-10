@@ -23,7 +23,8 @@ def download_file(site):
         cs = connect(server,address)
 
         #generating request and sending to know length of data
-        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Range: Yes \r\n\r\n'
+        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Range: Bytes\r\n\r\n'
+        print(request)
         request_header = bytes(request,'utf-8') 
         cs.send(request_header)
         
@@ -78,5 +79,7 @@ def write_file(msg,x):
 site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
+site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
+
 #server,address = get_server_address(site)
 download_file(site)
