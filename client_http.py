@@ -38,7 +38,8 @@ def download_file(site):
         contentlength = int(s[b'Content-Length'])
 
         #requesting again to download file
-        request_header = b'GET /files/Berlin%20group%20photo.jpg HTTP/1.1\r\nHOST: open-up.eu\r\n\r\n' 
+        request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
+        request_header = bytes(request,'utf-8')  
         cs.send(request_header)
 
         #downloading and saving
@@ -59,15 +60,18 @@ def download_file(site):
             if len(full_msg)-header== contentlength:
                 print(full_msg[header:])
                 print('Done')
-                f = open('Socket9.jpg', 'wb')
-                f.write(full_msg[header:])
-                f.close()
+                write_file(full_msg,2,header)
                 new_msg = True
                 full_msg = ""
-                new_msg = True
                 c= False
                 cs.close()
-        
+                
+def write_file(msg,x,header):
+        f = open('Socket'+str(x)+'.jpg', 'wb')
+        f.write(msg[header:])
+        f.close()
+                
+                
 #Main Function
 site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #server,address = get_server_address(site)
