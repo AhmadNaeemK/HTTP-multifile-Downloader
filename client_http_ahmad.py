@@ -1,8 +1,8 @@
 import socket
 import os,os.path
 
-def write_file(msg,x):
-        f = open('Socket'+str(x)+'.jpg', 'ab')
+def write_file(msg,x,ftype):
+        f = open('Socket'+str(x)+'.' +ftype, 'ab')
         f.write(msg)
         f.close()
 
@@ -29,21 +29,21 @@ def download_file(site):
 
         #generating request and sending to know length of data
         request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
-        print(request)
         request_header = bytes(request,'utf-8') 
         cs.send(request_header)
         
         #processing header to find content length of file to be downloaded
         header = cs.recv(2096)
-        print(header)
         header = header.split(b'\r\n')
         
         s = {}
         for i in range(1,len(header)-2):
             y = header[i].split(b':')
             s[y[0]] = y[1]
-            print(y)
+            #print(y)
         contentlength = int(s[b'Content-Length'])
+        type1 = s[b'Content-Type'].split(b'/')[1]
+        type1 = str(type1,'utf-8')
 
         if b'bytes' in s[b'Accept-Ranges']  :
                 #loop for multiple get requests
@@ -84,7 +84,7 @@ def download_file(site):
                             if len(full_msg)== contentlength:
                                 print(full_msg[header:])
                                 print('Done through special loop')
-                                write_file(full_msg,3)
+                                write_file(full_msg,3,type1)
                                 new_msg = True
                                 full_msg = b''
                                 c= False
