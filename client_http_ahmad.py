@@ -5,7 +5,7 @@ def write_file(msg,x,ftype):
         f = open('Socket'+str(x)+'.' +ftype, 'ab')
         f.write(msg)
         f.close()
-def write_file(msg,x,ftype,new):
+def write_file1(msg,x,ftype,new):
         f = open('Socket'+str(x)+'.' +ftype, 'wb')
         f.write(msg)
         f.close()
@@ -25,31 +25,8 @@ def connect(server):
         server_address = (server,80)
         cs.connect(server_address)
         return cs
-
-def download_file(site):
-
-        server,address = get_server_addess(site)
-        cs = connect(server)
-
-        #generating request and sending to know length of data
-        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
-        request_header = bytes(request,'utf-8') 
-        cs.send(request_header)
-        
-        #processing header to find content length of file to be downloaded
-        header = cs.recv(2096)
-        header = header.split(b'\r\n')
-        
-        s = {}
-        for i in range(1,len(header)-2):
-            y = header[i].split(b':')
-            s[y[0]] = y[1]
-            #print(y)
-        contentlength = int(s[b'Content-Length'])
-        type1 = s[b'Content-Type'].split(b'/')[1]
-        type1 = str(type1,'utf-8')
-        if b'Accept-Ranges' in s:
-                if b'bytes' in s[b'Accept-Ranges']  :
+def byte_range_download(s,q,contentlength,address,server,cs,type1):
+        if b'bytes' in s[b'Accept-Ranges']  :
                         #loop for multiple get requests
                         q=10 #Incase of multiple connection we get this variable from user
                         previousB= 0
@@ -98,6 +75,30 @@ def download_file(site):
                                         c= False
                         cs.close()
                 
+def download_file(site):
+
+        server,address = get_server_addess(site)
+        cs = connect(server)
+
+        #generating request and sending to know length of data
+        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
+        request_header = bytes(request,'utf-8') 
+        cs.send(request_header)
+        
+        #processing header to find content length of file to be downloaded
+        header = cs.recv(2096)
+        header = header.split(b'\r\n')
+        
+        s = {}
+        for i in range(1,len(header)-2):
+            y = header[i].split(b':')
+            s[y[0]] = y[1]
+            #print(y)
+        contentlength = int(s[b'Content-Length'])
+        type1 = s[b'Content-Type'].split(b'/')[1]
+        type1 = str(type1,'utf-8')
+        if b'Accept-Ranges' in s:
+                byte_range_download(s,10,contentlength,address,server,cs,type1)
         else:
                 print('Simulataneous connection not allowed using single connection')
                 request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
@@ -137,7 +138,7 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-#site = 'http://i.imgur.com/z4d4kWk.jpg'
+site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 download_file(site)
