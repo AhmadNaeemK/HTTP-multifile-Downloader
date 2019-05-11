@@ -2,7 +2,7 @@ import socket
 import os,os.path
 
 def write_file(msg,x):
-        f = open('Socket'+str(x)+'.pdf', 'ab')
+        f = open('Socket'+str(x)+'.jpg', 'ab')
         f.write(msg)
         f.close()
 
@@ -48,35 +48,45 @@ def download_file(site):
         if b'bytes' in s[b'Accept-Ranges']  :
                 #loop for multiple get requests
                 previousB= 0
-                nextB = contentlength/10
+                nextB = contentlength//10
+                #nextB = 18000               
                 full_msg = b''
-                for x in range (1 ,10):
+                c=0
+                for x in range (1,11):
+                        
                         bRange = "%s-%s"%(previousB,nextB)
-                        request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:' + bRange + '\r\n\r\n'
+                        request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + bRange + '\r\n\r\n'
+                        print(request)
                         request_header = bytes(request,'utf-8')  
                         cs.send(request_header)
                         previousB = nextB + 1
+                        flag = nextB
                         nextB += nextB
+                        print(nextB)
                         new_msg= True
-                        c=True
-                        while c:
-                            msg = cs.recv(4096)
+                        #c=True
+                        
+                        while c<flag:
+                            msg = cs.recv(15000)
+                            
                             if new_msg:
+                                
                                 head = msg.split(b'\r\n\r\n')
                                 header=(len(head[0]))+4
                                 print(head[0])
                                 print(header)
                                 msg = head[1]
-                                new_msg = False
-
+                                new_msg = False        
+                            #print(len(msg))
+                            c+=len(msg)
                             full_msg = full_msg + msg
-
+                            print(len(full_msg))
                             if len(full_msg)== contentlength:
                                 print(full_msg[header:])
                                 print('Done through special loop')
                                 write_file(full_msg,3)
                                 new_msg = True
-                                full_msg = ""
+                                full_msg = b''
                                 c= False
                 cs.close()
                 
@@ -99,7 +109,7 @@ def download_file(site):
                         print(header)
                         msg = head[1]
                         new_msg = False
-
+                    print("tis one did it" )
                     full_msg += msg
 
                     if len(full_msg)== contentlength:
