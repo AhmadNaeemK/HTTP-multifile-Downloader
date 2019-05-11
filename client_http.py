@@ -10,7 +10,7 @@ def get_server_addess(site):
         return (server,address)
 
 
-def connect(server,address):
+def connect(server):
         #tcp connection establish
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = (server,80)
@@ -20,7 +20,7 @@ def connect(server,address):
 def download_file(site):
 
         server,address = get_server_addess(site)
-        cs = connect(server,address)
+        cs = connect(server)
 
         #generating request and sending to know length of data
         request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'

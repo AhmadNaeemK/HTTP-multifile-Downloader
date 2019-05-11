@@ -15,7 +15,7 @@ def get_server_addess(site):
         return (server,address)
 
 
-def connect(server,address):
+def connect(server):
         #tcp connection establish
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = (server,80)
@@ -25,7 +25,7 @@ def connect(server,address):
 def download_file(site):
 
         server,address = get_server_addess(site)
-        cs = connect(server,address)
+        cs = connect(server)
 
         #generating request and sending to know length of data
         request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
@@ -47,8 +47,9 @@ def download_file(site):
 
         if b'bytes' in s[b'Accept-Ranges']  :
                 #loop for multiple get requests
+                q=10 #Incase of multiple connection we get this variable from user
                 previousB= 0
-                nextB = contentlength//10
+                nextB = contentlength//q
                 #nextB = 18000               
                 full_msg = b''
                 c=0
@@ -61,7 +62,9 @@ def download_file(site):
                         cs.send(request_header)
                         previousB = nextB + 1
                         flag = nextB
-                        nextB += nextB
+                        if nextB>contentlength:
+                                flag = contentlength
+                        nextB += contentlength//q
                         print(nextB)
                         new_msg= True
                         #c=True
