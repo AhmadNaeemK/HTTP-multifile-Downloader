@@ -1,11 +1,13 @@
 import socket
 import os,os.path
 
-def write_file(msg,x,ftype):
+def write_file(msg,x,ftype,direct):
+        os.chdir(direct)
         f = open('Socket'+str(x)+'.' +ftype, 'ab')
         f.write(msg)
         f.close()
-def write_file1(msg,x,ftype,new):
+def write_file1(msg,x,ftype,direct):
+        os.chdir(direct)
         f = open('Socket'+str(x)+'.' +ftype, 'wb')
         f.write(msg)
         f.close()
@@ -18,14 +20,14 @@ def get_server_addess(site):
         address = '/' + address
         return (server,address)
 
-
 def connect(server):
         #tcp connection establish
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = (server,80)
         cs.connect(server_address)
         return cs
-def byte_range_download(s,q,contentlength,address,server,cs,type1):
+
+def byte_range_download(s,q,contentlength,address,server,cs,type1,folder):
         if b'bytes' in s[b'Accept-Ranges']  :
                         #loop for multiple get requests
                         q=10 #Incase of multiple connection we get this variable from user
@@ -65,7 +67,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1):
                                     c+=len(msg)
                                     full_msg = full_msg + msg
                                     print(len(full_msg))
-                                    write_file(msg,3,type1)
+                                    write_file(msg,3,type1,folder)
                                     if len(full_msg)== contentlength:
                                         print(full_msg[header:])
                                         print('Done through special loop')
@@ -75,7 +77,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1):
                                         c= False
                         cs.close()
                 
-def download_file(site):
+def download_file(site,download_dir):
 
         server,address = get_server_addess(site)
         cs = connect(server)
@@ -98,7 +100,7 @@ def download_file(site):
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
         if b'Accept-Ranges' in s:
-                byte_range_download(s,10,contentlength,address,server,cs,type1)
+                byte_range_download(s,10,contentlength,address,server,cs,type1,download_dir)
         else:
                 print('Simulataneous connection not allowed using single connection')
                 request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
@@ -120,7 +122,7 @@ def download_file(site):
                         new_msg = False
                     #print("tis one did it" )
                     full_msg += msg
-                    write_file(msg,2,type1,2)
+                    write_file(msg,2,type1,2,download_dir)
                     if len(full_msg)== contentlength:
                                 print(full_msg[header:])
                                 print('Done')
@@ -141,4 +143,5 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
-download_file(site)
+ddir= "E:\Movies"
+download_file(site,ddir)
