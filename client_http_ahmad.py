@@ -143,5 +143,5 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
-ddir= "E:\Movies"
+ddir= "D:\Movies"
 download_file(site,ddir)
