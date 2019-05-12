@@ -4,6 +4,7 @@ import threading
 import time
 import File_Merger
 
+
 write_lock = threading.Lock()
 def write_file(msg,fname,ftype,direct):
         os.chdir(direct)
@@ -35,7 +36,7 @@ def connect(server):
 
 def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange):
         if b'bytes' in s[b'Accept-Ranges']:
-                        total_bytes=0
+                        
                         q=10 #Incase of multiple connection we get this variable from user
                         write_lock.acquire()
                         request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + byterange + '\r\n\r\n'
@@ -62,10 +63,10 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                 full_msg = full_msg + msg
                                 write_file(msg,flname,type1,folder)
                                 bytesRecv +=len(msg)
-                                total_bytes +=bytesRecv 
+                                total_bytes +=msg 
 
-                                if (time.time()- start >= 0.0005):
-                                        print("Download speed = ", (bytesRecv/(time.time()-start))/1000)
+                                if (time.time()- start >= 0.00005):
+                                        print(flname+"Download speed = ", (bytesRecv/(time.time()-start))/1024 ,'kB/sec')  
                                         print("% Download Completion = ", (total_bytes/contentlength)*100)
                                         start = time.time()
                                         bytesRecv = 0
@@ -139,31 +140,42 @@ def download_file(site,download_dir,filename,rflag):
                 full_msg = b''
                 new_msg= True
                 c=True
+                total_time = time.time()
                 start = time.time()
                 bytesRecv = 0
+                filesize=0
                 while c:
                     msg = cs.recv(4096)
                     #calculating metrics
-                    if (time.time()-start >= 0.00005):
-                            print("Download speed = ", (bytesRecv/(time.time()-start))/1000)
-                            print("% Download Completion = ", (len(full_msg)/contentlength)*100)
-                            start = time.time()
-                            bytesRecv = 0
+                    #if (time.time()-start >= 0.00005):
+                     #       print(filename,"Download speed = ", (bytesRecv/(time.time()-start))/1024)
+                      #    print(filename,"% Download Completion = ", (len(full_msg)/contentlength)*100)
+                       #     start = time.time()
+                        #    bytesRecv = 0
                             
                     if new_msg :
                         head = msg.split(b'\r\n\r\n')
                         header=(len(head[0]))+4
                         msg = head[1]
                         new_msg = False
-                    full_msg += msg
+                    #full_msg += msg
                     bytesRecv += len(msg) 
+                    filesize += len(msg)
+                    #calculating metrics
+                    if (time.time()-start >= 1):
+                            print(filename,"Download speed = ", (bytesRecv/(time.time()-start))/1024)
+                            print(filename,"% Download Completion = ", (filesize/contentlength)*100)
+                            start = time.time()
+                            bytesRecv = 0
                     write_file(msg,filename,type1,download_dir)
-
                 #breaking the loop if full file is recieved
-                    if len(full_msg)== contentlength:
-                        print(filename, ' Done')
+                    if filesize== contentlength:
+                        print(filename, "% Download Completion = ", (filesize/contentlength)*100)
+                        print(filename,"Total Download speed = ", (filesize/(time.time()-total_time))/1024)
                         new_msg = True
+                        #write_file(msg,filename,type1,download_dir)
                         full_msg = ""
+                        filesize = 0
                         c= False
                         cs.close()         
 
@@ -172,11 +184,11 @@ def download_file(site,download_dir,filename,rflag):
                 
 #Main Function
 #site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
-#site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
+site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-site = 'http://i.imgur.com/z4d4kWk.jpg'
+#site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 ddir= "C:\Project"
