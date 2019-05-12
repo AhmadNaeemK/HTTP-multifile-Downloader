@@ -141,7 +141,7 @@ def download_file(site,download_dir,filename,rflag):
 
                 
 #Main Function
-site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
+#site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
@@ -149,5 +149,5 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
-ddir= "C:\Project"
-download_file(site,ddir,'Cat',True)
+#ddir= "C:\Project"
+#download_file(site,ddir,'Cat',True)
