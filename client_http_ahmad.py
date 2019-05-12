@@ -239,6 +239,26 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
 site = 'http://i.imgur.com/z4d4kWk.jpg'
 
+''' This whole code is for CLi arguments and for downloading those files  
+inputargs = {}
+
+i=1
+while i < sys.argv.index('-f'):
+       inputargs[sys.argv[i]] = float(sys.argv[i+1])
+       i+=2
+       
+xy = sys.argv.index('-f')
+xye = int(inputargs['-nf'])
+siters = []
+ddirr =[]
+for zxy in range(xye):
+        sites.append(sys.argv[xy+zxy+1])
+        ddir.append(sys.argv[xy+zxy+2+xye])
+for i in range(len(sites)):
+        download_file(sites[i],ddir(i))
+'''
+
+
 #server,address = get_server_address(site)
 ddir= "E:\Movies"
 name= "Cat"
