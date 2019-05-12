@@ -110,13 +110,18 @@ def download_file(site,download_dir,filename,rflag):
                 for i in range(10):
                         byterange = "%s-%s"%(startbyte,endbyte)
                         name = filename+str(i)
-                        resume_flag = File_Merger.getFileSize(name,download_dir)
-                        print(resume_flag)
-                        if resume_flag == endbyte:
+                        resume_flag = File_Merger.getFileSize(name+'.'+type1,download_dir)
+                        print(resume_flag,'flag')
+                        if resume_flag-1 == endbyte-startbyte or resume_flag-1 ==contentlength%(contentlength//10):
+                                print( name, 'Completely Donwloaded' )
+                                startbyte = endbyte+1
+                                endbyte += contentlength//10
+                                
                                 continue
-                        if resume_flag !=0:
-
+                        elif resume_flag !=0:
+                                print("this one executed")
                                 startbyte = resume_flag
+                              
                         print(name)
                         t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
                                                                                                   type1,download_dir,name,byterange,startbyte))
@@ -186,12 +191,12 @@ def download_file(site,download_dir,filename,rflag):
                 
 #Main Function
 #site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
-site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
+#site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-site = 'http://i.imgur.com/z4d4kWk.jpg'
+#site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
-ddir= "C:\Project"
-download_file(site,ddir,'Cat',True)
+#ddir= "D:\Movies"
+#download_file(site,ddir,'Cat',True)
