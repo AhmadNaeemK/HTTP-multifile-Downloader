@@ -224,10 +224,18 @@ def download_file_multiconnection(site,download_dir,filename):
             #print(y)
         #getting contting content length and type of file
         contentlength = int(s[b'Content-Length'])
+        print(contentlength)
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
+        num_connections = 10
+        sByte = 0
+        eByte = contentlength//num_connections
         if b'Accept-Ranges' in s:
-                download_file_specific
+                for i in range (num_connections):
+                        fname = filename + str(i)
+                        download_file_specificRange(site,download_dir,fname,sByte,eByte)
+                        sByte = eByte + 1
+                        eByte += contentlength//num_connections
         else:
                 print('Simulataneous connection not allowed using single connection')
                 download_file(site,download_dir,filename)  
@@ -291,7 +299,7 @@ for i in range(len(sites)):
 
 
 #server,address = get_server_address(site)
-ddir= "E:\Movies"
+ddir= "C:\Project"
 name= "Cat"
 #download_file(site,ddir,name)
-download_file_specificRange(site,ddir,name,0,1024)
+download_file_multiconnection(site,ddir,name)
