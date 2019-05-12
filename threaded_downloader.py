@@ -34,9 +34,8 @@ def connect(server):
         cs.connect(server_address)
         return cs
 
-def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange):
+def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange,total_bytes):
         if b'bytes' in s[b'Accept-Ranges']:
-                        
                         q=10 #Incase of multiple connection we get this variable from user
                         write_lock.acquire()
                         request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + byterange + '\r\n\r\n'
@@ -47,7 +46,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                         
                         if int(byterange[1])>contentlength:
                                 flag = contentlength
-                        full_msg = b''
+                        full_msg = 0
                         new_msg= True
                         c=True
                         start = time.time()
@@ -59,10 +58,11 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                         msg = head[1]
                                         new_msg = False
                                 
-                                full_msg = full_msg + msg
+                                full_msg += len(msg)
                                 write_file(msg,flname,type1,folder)
                                 bytesRecv +=len(msg)
-                                total_bytes +=msg 
+                                total_bytes +=len(msg)
+                                
 
                                 if (time.time()- start >= 0.00005):
                                         print(flname+"Download speed = ", (bytesRecv/(time.time()-start))/1024 ,'kB/sec')  
@@ -72,9 +72,10 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                         bytesRecv = 0
 
                                       
-                                if len(full_msg)== int(byterange[1])+1-int(byterange[0]):
+                                if full_msg== int(byterange[1])+1-int(byterange[0]):
                                         write_lock.release()
                                         new_msg = True
+                                        full_msg =0
                                         c= False
                 
 def download_file(site,download_dir,filename,rflag):
@@ -116,7 +117,7 @@ def download_file(site,download_dir,filename,rflag):
                                 startbyte = resume_flag
                         print(name)
                         t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
-                                                                                                  type1,download_dir,name,byterange))
+                                                                                                  type1,download_dir,name,byterange,startbyte))
                         startbyte = endbyte+1
                         endbyte += contentlength//10
                         threads_list.append(t)
@@ -187,7 +188,7 @@ site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundame
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-#site = 'http://i.imgur.com/z4d4kWk.jpg'
+site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 ddir= "C:\Project"
