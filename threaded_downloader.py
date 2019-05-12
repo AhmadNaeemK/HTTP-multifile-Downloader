@@ -48,7 +48,8 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                         full_msg = b''
                         new_msg= True
                         c=True
-                        #Start a clock = start time
+                        start = time.time()
+                        bytesRecv = 0
                         while c:
                                 msg = cs.recv(15000)
                                 print(flname)    
@@ -59,11 +60,16 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                 
                                 full_msg = full_msg + msg
                                 write_file(msg,flname,type1,folder)
-                                 
-                                #byt += msg
-                                #if time now - start time  = condition:
-                                #       print(bytes/1000*speed)
-                                #       % download of file = byte/Delta(byterange)                                       
+
+
+                                if (time.time()- start >= 0.0005):
+                                        print("Download speed = ", (bytesRecv/(time.time()-start))/1000)
+                                        print("% Download Completion = ", (len(full_msg)/contentlength)*100)
+                                        start = time.time()
+                                        bytesRecv = 0
+
+                                bytesRecv +=len(msg)
+                                      
                                 if len(full_msg)== int(byterange[1])+1-int(byterange[0]):
                                         write_lock.release()
                                         print('Done through special loop')
@@ -94,7 +100,7 @@ def download_file(site,download_dir,filename,rflag):
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
         
-        if b'Accept-Ranges' not in s and rflag:
+        if b'Accept-Ranges' in s and rflag:
                 startbyte = 0
                 endbyte = contentlength//10
                 threads_list = []
@@ -128,7 +134,7 @@ def download_file(site,download_dir,filename,rflag):
                 while c:
                     msg = cs.recv(4096)
                     if (time.time()-start >= 0.00005):
-                            print("Download speed = ", bytesRecv/(time.time()-start))
+                            print("Download speed = ", (bytesRecv/(time.time()-start))/1000)
                             print("% Download Completion = ", (len(full_msg)/contentlength)*100)
                             start = time.time()
                             bytesRecv = 0
@@ -139,17 +145,9 @@ def download_file(site,download_dir,filename,rflag):
                         msg = head[1]
                         new_msg = False
                     full_msg += msg
-<<<<<<< HEAD
-                    bytesRecv += len(msg)
+                    bytesRecv += len(msg) 
                     write_file(msg,filename,type1,download_dir)
-=======
-                    write_file_new(msg,filename,type1,download_dir)
-                    
-                    #byt += msg
-                    #if time now - start time  = condition:
-                    #       print(bytes/1000*speed)
-                    #       % download of file = byte/content length                  
->>>>>>> c661b1e3333945da8c2241b3aec581dfb511eb92
+
                     if len(full_msg)== contentlength:
                         print('Done')
                         new_msg = True
@@ -170,4 +168,4 @@ site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 ddir= "C:\Project"
-download_file(site,ddir,'Cat',False)
+download_file(site,ddir,'Cat',True)
