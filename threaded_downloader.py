@@ -100,7 +100,8 @@ def download_file(site,download_dir,filename,rflag):
         contentlength = int(s[b'Content-Length'])
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
-        
+
+        #if file is resumable
         if b'Accept-Ranges' in s and rflag:
                 startbyte = 0
                 endbyte = contentlength//10
@@ -123,8 +124,11 @@ def download_file(site,download_dir,filename,rflag):
                 for t in threads_list:
                         t.join()
                 cs.close()
+                #mergin all the downloaded chunks into one file
                 File_Merger.mergeFiles(10, filename,type1 ,download_dir)
-        else:
+                print(filename, ' done')
+
+        else:   #if file is not resumable
                 if rflag:
                         print('Simulataneous connection not allowed using single connection')
                 request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
@@ -139,6 +143,7 @@ def download_file(site,download_dir,filename,rflag):
                 bytesRecv = 0
                 while c:
                     msg = cs.recv(4096)
+                    #calculating metrics
                     if (time.time()-start >= 0.00005):
                             print("Download speed = ", (bytesRecv/(time.time()-start))/1000)
                             print("% Download Completion = ", (len(full_msg)/contentlength)*100)
@@ -154,8 +159,9 @@ def download_file(site,download_dir,filename,rflag):
                     bytesRecv += len(msg) 
                     write_file(msg,filename,type1,download_dir)
 
+                #breaking the loop if full file is recieved
                     if len(full_msg)== contentlength:
-                        print('Done')
+                        print(filename, ' Done')
                         new_msg = True
                         full_msg = ""
                         c= False
