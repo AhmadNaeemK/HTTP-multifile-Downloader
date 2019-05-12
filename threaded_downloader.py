@@ -53,8 +53,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                         start = time.time()
                         bytesRecv = 0
                         while c:
-                                msg = cs.recv(15000)
-                                print(flname)    
+                                msg = cs.recv(15000)    
                                 if new_msg:
                                         head = msg.split(b'\r\n\r\n')
                                         msg = head[1]
@@ -67,6 +66,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
 
                                 if (time.time()- start >= 0.00005):
                                         print(flname+"Download speed = ", (bytesRecv/(time.time()-start))/1024 ,'kB/sec')  
+
                                         print("% Download Completion = ", (total_bytes/contentlength)*100)
                                         start = time.time()
                                         bytesRecv = 0
@@ -74,7 +74,6 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                       
                                 if len(full_msg)== int(byterange[1])+1-int(byterange[0]):
                                         write_lock.release()
-                                        print('Done through special loop')
                                         new_msg = True
                                         c= False
                 
