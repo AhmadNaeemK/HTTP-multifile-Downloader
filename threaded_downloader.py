@@ -11,7 +11,7 @@ def write_file(msg,fname,ftype,direct):
         f = open(fname+'.' +ftype, 'ab')
         f.write(msg)
         f.close()
-def write_file1(msg,fname,ftype,direct):
+def write_file_new(msg,fname,ftype,direct):
         os.chdir(direct)
         #f = open('Socket'+str(x)+'.' +ftype, 'wb')
         f = open(fname+'.' +ftype, 'wb')
@@ -34,10 +34,9 @@ def connect(server):
         return cs
 
 def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange):
-        if b'bytes' in s[b'Accept-Ranges']  :
+        if b'bytes' in s[b'Accept-Ranges']:
                         q=10 #Incase of multiple connection we get this variable from user
                         write_lock.acquire()
-                        
                         request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + byterange + '\r\n\r\n'
                         request_header = bytes(request,'utf-8')  
                         cs.send(request_header)
@@ -49,7 +48,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                         full_msg = b''
                         new_msg= True
                         c=True
-                                
+                        #Start a clock = start time
                         while c:
                                 msg = cs.recv(15000)
                                 print(flname)    
@@ -60,7 +59,11 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                 
                                 full_msg = full_msg + msg
                                 write_file(msg,flname,type1,folder)
-                                
+                                 
+                                #byt += msg
+                                #if time now - start time  = condition:
+                                #       print(bytes/1000*speed)
+                                #       % download of file = byte/Delta(byterange)                                       
                                 if len(full_msg)== int(byterange[1])+1-int(byterange[0]):
                                         write_lock.release()
                                         print('Done through special loop')
@@ -136,8 +139,17 @@ def download_file(site,download_dir,filename,rflag):
                         msg = head[1]
                         new_msg = False
                     full_msg += msg
+<<<<<<< HEAD
                     bytesRecv += len(msg)
                     write_file(msg,filename,type1,download_dir)
+=======
+                    write_file_new(msg,filename,type1,download_dir)
+                    
+                    #byt += msg
+                    #if time now - start time  = condition:
+                    #       print(bytes/1000*speed)
+                    #       % download of file = byte/content length                  
+>>>>>>> c661b1e3333945da8c2241b3aec581dfb511eb92
                     if len(full_msg)== contentlength:
                         print('Done')
                         new_msg = True
