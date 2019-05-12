@@ -1,9 +1,9 @@
-'''import sys
+import sys
 import threaded_downloader
 
 #This whole code is for CLi arguments and for downloading those files  
 inputargs = {}
-#sites = []
+sites = []
 ddir = []
 
 if '-r' in sys.argv:
@@ -22,13 +22,17 @@ xye = int(inputargs['-nf'])
 
 print(inputargs)
 print(sys.argv)
-name = 'cat' 
+name = ['cat','dog'] 
 for zxy in range(xye):
-        #sites.append(sys.argv[xy+zxy+1])
+        sites.append(sys.argv[xy+zxy+1])
         ddir.append(sys.argv[xy+zxy+2+xye])
+
 print(inputargs)
 for i in range(len(sites)):
-        threaded_downloader.download_file(sites[i],ddir(i),name,r)
+       threaded_downloader.download_file(sites[i],ddir[i],name[i],r)
+
+
+
 '''
 import sys
 from threaded_downloader import *
@@ -51,3 +55,4 @@ for zxy in range(xye):
         ddir.append(sys.argv[xy+zxy+2+xye])
 for i in range(len(site)):
         download_file(site[i],ddir[i],name,True)
+'''

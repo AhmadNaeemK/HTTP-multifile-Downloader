@@ -129,7 +129,7 @@ def download_file(site,download_dir,filename,rflag):
                         msg = head[1]
                         new_msg = False
                     full_msg += msg
-                    write_file1(msg,filename,type1,download_dir)
+                    write_file(msg,filename,type1,download_dir)
                     if len(full_msg)== contentlength:
                         print('Done')
                         new_msg = True
@@ -150,4 +150,4 @@ def download_file(site,download_dir,filename,rflag):
 
 #server,address = get_server_address(site)
 #ddir= "C:\Project"
-#download_file(site,ddir,'Cat',True)
+#download_file(site,ddir,'Cat',False)
