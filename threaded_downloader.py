@@ -76,7 +76,7 @@ def download_file(site,download_dir,filename,rflag):
         cs = connect(server)
 
         #generating request and sending to know length of data
-        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
+        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\n\r\n'
         request_header = bytes(request,'utf-8') 
         cs.send(request_header)
         
