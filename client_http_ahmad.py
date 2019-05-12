@@ -3,6 +3,7 @@ import os,os.path
 import threading
 from queue import Queue
 
+
 write_lock = threading.Lock()
 
 
@@ -141,7 +142,7 @@ def download_file(site,download_dir,filename):
 
 def download_file_specificRange(sSite,sDownload_dir,filename,startByte,endByte):
 
-        server,address = get_server_addess(site)
+        server,address = get_server_addess(sSite)
         cs = connect(server)
 
         #generating request and sending to know length of data
@@ -278,28 +279,11 @@ def threader():
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
 site = 'http://i.imgur.com/z4d4kWk.jpg'
 
-''' This whole code is for CLi arguments and for downloading those files  
-inputargs = {}
 
-i=1
-while i < sys.argv.index('-f'):
-       inputargs[sys.argv[i]] = float(sys.argv[i+1])
-       i+=2
-       
-xy = sys.argv.index('-f')
-xye = int(inputargs['-nf'])
-siters = []
-ddirr =[]
-for zxy in range(xye):
-        sites.append(sys.argv[xy+zxy+1])
-        ddir.append(sys.argv[xy+zxy+2+xye])
-for i in range(len(sites)):
-        download_file_specificRange(sites[i],ddir(i),name,0,1024)
-'''
 
 
 #server,address = get_server_address(site)
 ddir= "C:\Project"
 name= "Cat"
-#download_file(site,ddir,name)
+download_file(site,ddir,name)
 download_file_multiconnection(site,ddir,name)
