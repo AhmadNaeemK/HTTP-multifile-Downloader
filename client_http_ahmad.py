@@ -302,4 +302,4 @@ for i in range(len(sites)):
 ddir= "C:\Project"
 name= "Cat1"
 #download_file(site,ddir,name)
-download_file_specificRange(site,ddir,name,0, 14651)
+download_file_multiconnection(site,ddir,name)
