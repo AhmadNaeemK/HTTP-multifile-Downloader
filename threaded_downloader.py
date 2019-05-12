@@ -110,10 +110,12 @@ def download_file(site,download_dir,filename,rflag):
                 for i in range(10):
                         byterange = "%s-%s"%(startbyte,endbyte)
                         name = filename+str(i)
-                        resume_flag = File_Merger.getFileSize(filename,download_dir)
+                        resume_flag = File_Merger.getFileSize(name,download_dir)
+                        print(resume_flag)
                         if resume_flag == endbyte:
                                 continue
-                        elif resume_flag !=0:
+                        if resume_flag !=0:
+
                                 startbyte = resume_flag
                         print(name)
                         t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
