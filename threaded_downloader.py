@@ -102,7 +102,7 @@ def download_file(site,download_dir,filename,rflag):
         type1 = str(type1,'utf-8')
 
         #if file is resumable
-        if b'Accept-Ranges' in s and rflag:
+        if b'Accept-Ranges' in s:
                 startbyte = 0
                 endbyte = contentlength//10
                 threads_list = []
@@ -110,18 +110,17 @@ def download_file(site,download_dir,filename,rflag):
                         byterange = "%s-%s"%(startbyte,endbyte)
                         name = filename+str(i)
                         resume_flag = File_Merger.getFileSize(name+'.'+type1,download_dir)
-                        print(resume_flag,'flag')
-                        if resume_flag-1 == endbyte-startbyte or resume_flag-1 ==contentlength%(contentlength//10):
-                                print( name, 'Completely Donwloaded' )
-                                startbyte = endbyte+1
-                                endbyte += contentlength//10
-                                
-                                continue
-                        elif resume_flag !=0:
-                                print("this one executed")
-                                startbyte = resume_flag
-                              
-                        print(name)
+                        if rflag:
+                                if resume_flag-1 == endbyte-startbyte or resume_flag-1 ==contentlength%(contentlength//10):
+                                        print( name, 'Completely Donwloaded' )
+                                        startbyte = endbyte+1
+                                        endbyte += contentlength//10
+                                        
+                                        continue
+                                elif resume_flag !=0:
+                                        print(name,"Partially Downloaded")
+                                        startbyte = resume_flag
+                                      
                         t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
                                                                                                   type1,download_dir,name,byterange,startbyte))
                         startbyte = endbyte+1
