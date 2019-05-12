@@ -14,10 +14,13 @@ def mergeFiles(noFiles, fileName,ftype ,directory):
     file.close()
 
 def getFileSize(filename,directory):
-    os.chdir(directory)
-    fileSize = os.stat(filename).st_size
-    fileSize = int (fileSize)
-    return(fileSize)
+    try:
+        os.chdir(directory)
+        fileSize = os.stat(filename).st_size
+        fileSize = int (fileSize)
+        return(fileSize)
+    except:
+        return 0
 
 
 
