@@ -7,7 +7,7 @@ def mergeFiles(noFiles, fileName,ftype ,directory):
         f = open(fileName + str(i)+'.' + ftype,'rb')
         data += f.read()
         f.close()
-#        os.remove(fileName + str(i)+'.' + ftype)
+        os.remove(fileName + str(i)+'.' + ftype)
     
     file = open(fileName + '.' + ftype, 'wb')
     file.write(data)
