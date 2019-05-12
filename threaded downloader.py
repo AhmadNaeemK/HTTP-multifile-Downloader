@@ -67,7 +67,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                         new_msg = True
                                         c= False
                 
-def download_file(site,download_dir,filename):
+def download_file(site,download_dir,filename,rflag):
 
         server,address = get_server_addess(site)
         cs = connect(server)
@@ -91,7 +91,7 @@ def download_file(site,download_dir,filename):
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
         
-        if b'Accept-Ranges' in s:
+        if b'Accept-Ranges' in s and rflag:
                 startbyte = 0
                 endbyte = contentlength//10
                 threads_list = []
@@ -110,7 +110,8 @@ def download_file(site,download_dir,filename):
                 cs.close()
                 File_Merger.mergeFiles(10, filename,type1 ,download_dir)
         else:
-                print('Simulataneous connection not allowed using single connection')
+                if rflag:
+                        print('Simulataneous connection not allowed using single connection')
                 request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
                 
                 request_header = bytes(request,'utf-8')  
@@ -125,22 +126,17 @@ def download_file(site,download_dir,filename):
                     if new_msg :
                         head = msg.split(b'\r\n\r\n')
                         header=(len(head[0]))+4
-                        print(head[0])
-                        print(header)
                         msg = head[1]
                         new_msg = False
-                        po +=1
-                    #print("tis one did it" )
                     full_msg += msg
-                    write_file(msg,name,type1,2,download_dir)
+                    write_file1(msg,filename,type1,download_dir)
                     if len(full_msg)== contentlength:
-                        print(full_msg[header:])
                         print('Done')
                         new_msg = True
-#                                write_file(full_msg,2)
                         full_msg = ""
                         c= False
                         cs.close()         
+
                 
 
                 
@@ -150,8 +146,8 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-site = 'http://i.imgur.com/z4d4kWk.jpg'
+#site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 ddir= "C:\Project"
-download_file(site,ddir,'Cat')
+download_file(site,ddir,'Cat',True)
