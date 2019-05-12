@@ -271,7 +271,7 @@ def threader():
                                 
 
 #Main Function
-site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
+#site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 #site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
@@ -294,7 +294,7 @@ for zxy in range(xye):
         sites.append(sys.argv[xy+zxy+1])
         ddir.append(sys.argv[xy+zxy+2+xye])
 for i in range(len(sites)):
-        download_file(sites[i],ddir(i))
+        download_file_specificRange(sites[i],ddir(i),name,0,1024)
 '''
 
 
