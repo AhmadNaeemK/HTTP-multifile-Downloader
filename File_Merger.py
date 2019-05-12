@@ -17,7 +17,7 @@ def getFileSize(filename,directory):
     os.chdir(directory)
     fileSize = os.stat(filename).st_size
     fileSize = int (fileSize)
-    print (fileSize)
+    return(fileSize)
 
 
 

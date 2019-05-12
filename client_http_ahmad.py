@@ -280,8 +280,9 @@ site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 ''' This whole code is for CLi arguments and for downloading those files  
 inputargs = {}
-
-i=1
+if '-r' in sys.argv:
+        i=2
+else: i=1
 while i < sys.argv.index('-f'):
        inputargs[sys.argv[i]] = float(sys.argv[i+1])
        i+=2
