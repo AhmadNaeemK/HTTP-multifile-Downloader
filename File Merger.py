@@ -1,7 +1,7 @@
 import os
 #filename without number or extension
 def mergeFiles(noFiles, fileName,ftype ,directory):
-    oss.chdir(directory)
+    os.chdir(directory)
     data = b''
     for i in range(noFiles):
         f = open(fileName + str(i)+'.' + ftype,'rb')
