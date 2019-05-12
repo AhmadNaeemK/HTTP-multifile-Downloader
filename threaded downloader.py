@@ -4,16 +4,16 @@ import threading
 import time
 
 write_lock = threading.Lock()
-def write_file(msg,x,ftype,direct):
+def write_file(msg,fname,ftype,direct):
         os.chdir(direct)
         #f = open('Socket'+str(x)+'.' +ftype, 'ab')
-        f = open(x+'.' +ftype, 'ab')
+        f = open(fname+'.' +ftype, 'ab')
         f.write(msg)
         f.close()
-def write_file1(msg,x,ftype,direct):
+def write_file1(msg,fname,ftype,direct):
         os.chdir(direct)
         #f = open('Socket'+str(x)+'.' +ftype, 'wb')
-        f = open(x+'.' +ftype, 'wb')
+        f = open(fname+'.' +ftype, 'wb')
         f.write(msg)
         f.close()
         
@@ -32,10 +32,9 @@ def connect(server):
         cs.connect(server_address)
         return cs
 
-def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,name,byterange):
+def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange):
         if b'bytes' in s[b'Accept-Ranges']  :
                         q=10 #Incase of multiple connection we get this variable from user
-                        #previousB= 0
                         write_lock.acquire()
                         
                         request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + byterange + '\r\n\r\n'
@@ -52,15 +51,14 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,name,by
                                 
                         while c:
                                 msg = cs.recv(15000)
-                                print(name)    
-                                #if name =='file0' and new_msg:
+                                print(flname)    
                                 if new_msg:
                                         head = msg.split(b'\r\n\r\n')
                                         msg = head[1]
                                         new_msg = False
                                 
                                 full_msg = full_msg + msg
-                                write_file(msg,name,type1,folder)
+                                write_file(msg,flname,type1,folder)
                                 
                                 if len(full_msg)== int(byterange[1])+1-int(byterange[0]):
                                         write_lock.release()
@@ -68,7 +66,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,name,by
                                         new_msg = True
                                         c= False
                 
-def download_file(site,download_dir):
+def download_file(site,download_dir,filename):
 
         server,address = get_server_addess(site)
         cs = connect(server)
@@ -86,19 +84,22 @@ def download_file(site,download_dir):
         for i in range(1,len(header)-2):
             y = header[i].split(b':')
             s[y[0]] = y[1]
-            #print(y)
+
+
         contentlength = int(s[b'Content-Length'])
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
+        
         if b'Accept-Ranges' in s:
                 startbyte = 0
                 endbyte = contentlength//10
                 threads_list = []
                 for i in range(10):
                         byterange = "%s-%s"%(startbyte,endbyte)
-                        name = 'file{}'.format(i)
-                        t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,type1,download_dir,name,
-                                                                                                  byterange))
+                        name = filename+str(i)
+                        print(name)
+                        t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
+                                                                                                  type1,download_dir,name,byterange))
                         startbyte = endbyte+1
                         endbyte += contentlength//10
                         threads_list.append(t)
@@ -151,4 +152,4 @@ site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
 ddir= "D:\Movies"
-download_file(site,ddir)
+download_file(site,ddir,'Cat')
