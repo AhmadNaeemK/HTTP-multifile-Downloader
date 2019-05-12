@@ -8,13 +8,12 @@ import File_Merger
 write_lock = threading.Lock()
 def write_file(msg,fname,ftype,direct):
         os.chdir(direct)
-        #f = open('Socket'+str(x)+'.' +ftype, 'ab')
         f = open(fname+'.' +ftype, 'ab')
         f.write(msg)
         f.close()
+        
 def write_file_new(msg,fname,ftype,direct):
         os.chdir(direct)
-        #f = open('Socket'+str(x)+'.' +ftype, 'wb')
         f = open(fname+'.' +ftype, 'wb')
         f.write(msg)
         f.close()
@@ -147,18 +146,13 @@ def download_file(site,download_dir,filename,rflag):
                 full_msg = b''
                 new_msg= True
                 c=True
+                #variables for metrics
                 total_time = time.time()
                 start = time.time()
                 bytesRecv = 0
                 filesize=0
                 while c:
                     msg = cs.recv(4096)
-                    #calculating metrics
-                    #if (time.time()-start >= 0.00005):
-                     #       print(filename,"Download speed = ", (bytesRecv/(time.time()-start))/1024)
-                      #    print(filename,"% Download Completion = ", (len(full_msg)/contentlength)*100)
-                       #     start = time.time()
-                        #    bytesRecv = 0
                             
                     if new_msg :
                         head = msg.split(b'\r\n\r\n')
@@ -189,14 +183,8 @@ def download_file(site,download_dir,filename,rflag):
                 
 
                 
-#Main Function
-#site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
-#site = 'http://people.unica.it/vincenzofiorentini/files/2012/04/Halliday-Fundamentals-of-Physics-Extended-9th-HQ.pdf'
-#site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
-#site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
-#site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-#site = 'http://i.imgur.com/z4d4kWk.jpg'
 
-#server,address = get_server_address(site)
-#ddir= "D:\Movies"
-#download_file(site,ddir,'Cat',True)
+site = 'http://i.imgur.com/z4d4kWk.jpg'
+
+ddir= "C:\project"
+download_file(site,ddir,'Cat',True)
