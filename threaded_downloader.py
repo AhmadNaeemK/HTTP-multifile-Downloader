@@ -35,6 +35,7 @@ def connect(server):
 
 def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange):
         if b'bytes' in s[b'Accept-Ranges']:
+                        total_bytes=0
                         q=10 #Incase of multiple connection we get this variable from user
                         write_lock.acquire()
                         request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + byterange + '\r\n\r\n'
@@ -59,15 +60,16 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                 
                                 full_msg = full_msg + msg
                                 write_file(msg,flname,type1,folder)
-
+                                bytesRecv +=len(msg)
+                                total_bytes +=bytesRecv 
 
                                 if (time.time()- start >= 0.0005):
                                         print("Download speed = ", (bytesRecv/(time.time()-start))/1000)
-                                        print("% Download Completion of ",flname , " = ", (len(full_msg)/(contentlength//q))*100)
+
+                                        print("% Download Completion = ", (total_bytes/contentlength)*100)
                                         start = time.time()
                                         bytesRecv = 0
 
-                                bytesRecv +=len(msg)
                                       
                                 if len(full_msg)== int(byterange[1])+1-int(byterange[0]):
                                         write_lock.release()
@@ -106,6 +108,11 @@ def download_file(site,download_dir,filename,rflag):
                 for i in range(10):
                         byterange = "%s-%s"%(startbyte,endbyte)
                         name = filename+str(i)
+                        resume_flag = File_Merger.getFileSize(filename,download_dir)
+                        if resume_flag == endbyte:
+                                continue
+                        elif resume_flag !=0:
+                                startbyte = resume_flag
                         print(name)
                         t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
                                                                                                   type1,download_dir,name,byterange))
