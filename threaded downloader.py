@@ -2,6 +2,7 @@ import socket
 import os,os.path
 import threading
 import time
+import File_Merger
 
 write_lock = threading.Lock()
 def write_file(msg,fname,ftype,direct):
@@ -107,6 +108,7 @@ def download_file(site,download_dir,filename):
                 for t in threads_list:
                         t.join()
                 cs.close()
+                File_Merger.mergeFiles(10, filename,type1 ,download_dir)
         else:
                 print('Simulataneous connection not allowed using single connection')
                 request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\n\r\n'
@@ -151,5 +153,5 @@ site = 'http://open-up.eu/files/Berlin%20group%20photo.jpg?width=600&height=600'
 site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
-ddir= "D:\Movies"
+ddir= "C:\Project"
 download_file(site,ddir,'Cat')
