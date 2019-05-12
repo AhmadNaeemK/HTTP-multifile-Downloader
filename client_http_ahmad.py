@@ -300,6 +300,6 @@ for i in range(len(sites)):
 
 #server,address = get_server_address(site)
 ddir= "C:\Project"
-name= "Cat"
+name= "Cat1"
 #download_file(site,ddir,name)
-download_file_multiconnection(site,ddir,name)
+download_file_specificRange(site,ddir,name,0, 14651)
