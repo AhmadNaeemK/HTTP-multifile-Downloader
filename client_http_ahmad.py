@@ -1,7 +1,6 @@
 import socket
 import os,os.path
 import threading
-import sys
 from queue import Queue
 
 write_lock = threading.Lock()
@@ -202,6 +201,37 @@ def download_file_specificRange(sSite,sDownload_dir,filename,startByte,endByte):
         else:
                 print('Simulataneous connections not allowed ')
                 download_file(sSite,sDownload_dir,filename)
+
+def download_file_multiconnection(site,download_dir,filename):
+
+        server,address = get_server_addess(site)
+        cs = connect(server)
+
+        #generating request and sending to know length of data
+        request = 'HEAD ' + address + ' HTTP/1.1\r\nHOST: ' + server +'\r\nAccept-Ranges: bytes\r\n\r\n'
+        request_header = bytes(request,'utf-8') 
+        cs.send(request_header)
+        
+        #processing header to find content length of file to be downloaded
+        header = cs.recv(2096)
+        cs.close()
+        header = header.split(b'\r\n')
+        
+        s = {}
+        for i in range(1,len(header)-2):
+            y = header[i].split(b':')
+            s[y[0]] = y[1]
+            #print(y)
+        #getting contting content length and type of file
+        contentlength = int(s[b'Content-Length'])
+        type1 = s[b'Content-Type'].split(b'/')[1]
+        type1 = str(type1,'utf-8')
+        if b'Accept-Ranges' in s:
+                download_file_specific
+        else:
+                print('Simulataneous connection not allowed using single connection')
+                download_file(site,download_dir,filename)  
+
 #threading
 def exampleJob(worker):
 
