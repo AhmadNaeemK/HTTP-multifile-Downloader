@@ -7,17 +7,16 @@ def mergeFiles(noFiles, fileName,ftype ,directory):
         f = open(fileName + str(i)+'.' + ftype,'rb')
         data += f.read()
         f.close()
-        #os.remove(f)
 
     file = open(fileName + '.' + ftype, 'wb')
     file.write(data)
     file.close()
-
-#filename  including extension
-#def getFileSize(filename,directory):
- #   os.chdir(directory)
-  #  fileSize = os.stat(filename).st_size
-   # fileSize = int (fileSize)
-    #print (fileSize)
+    for i in range(noFiles):     #to delete the individual chunks
+        f=directory+"/"+fileName + str(i)+'.' + ftype
+        print(f)
+        os.remove(f)
     
-#getFileSize('File.jpeg', 'C:\Project')
+
+mergeFiles(10,'file','png','C:/Project')
+print('done')
+
