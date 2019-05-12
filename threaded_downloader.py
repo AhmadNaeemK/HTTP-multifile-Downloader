@@ -91,7 +91,7 @@ def download_file(site,download_dir,filename,rflag):
         type1 = s[b'Content-Type'].split(b'/')[1]
         type1 = str(type1,'utf-8')
         
-        if b'Accept-Ranges' in s and rflag:
+        if b'Accept-Ranges' not in s and rflag:
                 startbyte = 0
                 endbyte = contentlength//10
                 threads_list = []
@@ -120,15 +120,23 @@ def download_file(site,download_dir,filename,rflag):
                 full_msg = b''
                 new_msg= True
                 c=True
-                
+                start = time.time()
+                bytesRecv = 0
                 while c:
                     msg = cs.recv(4096)
+                    if (time.time()-start >= 0.00005):
+                            print("Download speed = ", bytesRecv/(time.time()-start))
+                            print("% Download Completion = ", (len(full_msg)/contentlength)*100)
+                            start = time.time()
+                            bytesRecv = 0
+                            
                     if new_msg :
                         head = msg.split(b'\r\n\r\n')
                         header=(len(head[0]))+4
                         msg = head[1]
                         new_msg = False
                     full_msg += msg
+                    bytesRecv += len(msg)
                     write_file(msg,filename,type1,download_dir)
                     if len(full_msg)== contentlength:
                         print('Done')
@@ -146,8 +154,8 @@ def download_file(site,download_dir,filename,rflag):
 #site = 'http://africhthy.org/sites/africhthy.org/files/styles/slideshow_large/public/Lukuga.jpg?itok=M6ByJTZQ'
 #site = 'http://ipaeg.org/sites/ipaeg.org/files/styles/medium/public/IMG_0499.JPG?itok=U8KP8f4j'
 #site = 'http://s0.cyberciti.org/images/misc/static/2012/11/ifdata-welcome-0.png'
-#site = 'http://i.imgur.com/z4d4kWk.jpg'
+site = 'http://i.imgur.com/z4d4kWk.jpg'
 
 #server,address = get_server_address(site)
-#ddir= "C:\Project"
-#download_file(site,ddir,'Cat',False)
+ddir= "C:\Project"
+download_file(site,ddir,'Cat',False)
