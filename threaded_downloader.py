@@ -33,9 +33,8 @@ def connect(server):
         cs.connect(server_address)
         return cs
 
-def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange,total_bytes):
+def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,byterange,total_bytes,i):
         if b'bytes' in s[b'Accept-Ranges']:
-                        q=10 #Incase of multiple connection we get this variable from user
                         write_lock.acquire()
                         request = 'GET ' + address + ' HTTP/1.1\r\nHOST: ' + server + '\r\nRange:bytes=' + byterange + '\r\n\r\n'
                         request_header = bytes(request,'utf-8')  
@@ -63,7 +62,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                 total_bytes +=len(msg)
                                 
 
-                                if (time.time()- start >= 0.00005):
+                                if (time.time()- start >= i):
                                         print(flname+"Download speed = ", (bytesRecv/(time.time()-start))/1024 ,'kB/sec')  
 
                                         print("% Download Completion = ", (total_bytes/contentlength)*100)
@@ -77,7 +76,7 @@ def byte_range_download(s,q,contentlength,address,server,cs,type1,folder,flname,
                                         full_msg =0
                                         c= False
                 
-def download_file(site,download_dir,filename,rflag):
+def download_file(site,download_dir,filename,rflag,q,i):
 
         server,address = get_server_addess(site)
         cs = connect(server)
@@ -104,34 +103,34 @@ def download_file(site,download_dir,filename,rflag):
         #if file is resumable
         if b'Accept-Ranges' in s:
                 startbyte = 0
-                endbyte = contentlength//10
+                endbyte = contentlength//q
                 threads_list = []
-                for i in range(10):
+                for i in range(q):
                         byterange = "%s-%s"%(startbyte,endbyte)
                         name = filename+str(i)
                         resume_flag = File_Merger.getFileSize(name+'.'+type1,download_dir)
                         if rflag:
-                                if resume_flag-1 == endbyte-startbyte or resume_flag-1 ==contentlength%(contentlength//10):
+                                if resume_flag-1 == endbyte-startbyte or resume_flag-1 ==contentlength%(contentlength//q):
                                         print( name, 'Completely Donwloaded' )
                                         startbyte = endbyte+1
-                                        endbyte += contentlength//10
+                                        endbyte += contentlength//q
                                         
                                         continue
                                 elif resume_flag !=0:
                                         print(name,"Partially Downloaded")
                                         startbyte = resume_flag
                                       
-                        t = threading.Thread(target = byte_range_download , name = name , args = (s,10,contentlength,address,server,cs,
-                                                                                                  type1,download_dir,name,byterange,startbyte))
+                        t = threading.Thread(target = byte_range_download , name = name , args = (s,q,contentlength,address,server,cs,
+                                                                                                  type1,download_dir,name,byterange,startbyte,i))
                         startbyte = endbyte+1
-                        endbyte += contentlength//10
+                        endbyte += contentlength//q
                         threads_list.append(t)
                         t.start()
                 for t in threads_list:
                         t.join()
                 cs.close()
                 #mergin all the downloaded chunks into one file
-                File_Merger.mergeFiles(10, filename,type1 ,download_dir)
+                File_Merger.mergeFiles(q, filename,type1 ,download_dir)
                 print(filename, ' done')
 
         else:   #if file is not resumable
@@ -162,7 +161,7 @@ def download_file(site,download_dir,filename,rflag):
                     bytesRecv += len(msg) 
                     filesize += len(msg)
                     #calculating metrics
-                    if (time.time()-start >= 1):
+                    if (time.time()-start >= i):
                             print(filename,"Download speed = ", (bytesRecv/(time.time()-start))/1024)
                             print(filename,"% Download Completion = ", (filesize/contentlength)*100)
                             start = time.time()
@@ -183,7 +182,7 @@ def download_file(site,download_dir,filename,rflag):
 
                 
 
-site = 'http://i.imgur.com/z4d4kWk.jpg'
+#site = 'http://i.imgur.com/z4d4kWk.jpg'
 
-ddir= "C:\project"
-download_file(site,ddir,'Cat',True)
+#ddir= "C:\project"
+#download_file(site,ddir,'Cat',True)
